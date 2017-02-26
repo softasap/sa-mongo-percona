@@ -1,2 +1,9 @@
 ---
 # handlers file for sa-mongo-percona
+
+  - name: restart mongodb
+    service: name="mongod" state=restarted
+    when: docker_test is not defined # Docker systemd is not available
+    become: yes
+
+
