@@ -1,0 +1,4 @@
+[submodule "roles/sa-mongo-percona"]
+        path = roles/sa-mongo-percona
+        url = https://github.com/softasap/sa-mongo-percona.git
+

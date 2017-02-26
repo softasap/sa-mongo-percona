@@ -1,0 +1,15 @@
+---
+# tasks file for sa-mongo-percona
+
+  - name: Percona Server for MongoDB | Check mongo_version variable
+    assert:
+      that: mongo_version in [ "3.4" ]
+    tags:
+       -mongo
+
+  - include: __detect_init_system.yml
+
+  - include: tasks_mongodb_percona.yml
+
+  - include: mongo_cfg_patch.yml
+

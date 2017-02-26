@@ -1,0 +1,53 @@
+---
+  # Parameters:
+
+  - set_fact:
+      mongodb_service_name: mongod
+
+  - name: Percona Server for MongoDB | Check if is present
+    command: test -x /usr/bin/mongo
+    when: ansible_system == "Linux"
+    ignore_errors: yes
+    register: mongo_present
+    tags: mongodb3
+
+  - name: Percona Server for MongoDB | Add GPG key to apt keyring
+    apt_key: id=1C4CBDCDCD2EFD2A keyserver=hkp://keys.gnupg.net state=present
+    become: yes
+    tags: mongodb3
+
+  - name: Percona Server for MongoDB | Add Debian apt repository
+    apt_repository: repo="deb http://repo.percona.com/apt {{ansible_distribution_release}} main"
+    when: ansible_os_family == "Debian" and mongo_present|failed
+    tags: mongodb3
+    become: yes
+
+  - name: Percona Server for MongoDB | Add Debian apt repository
+    apt_repository: repo="deb-src http://repo.percona.com/apt {{ansible_distribution_release}} main"
+    when: ansible_os_family == "Debian" and mongo_present|failed
+    tags: mongodb3
+    become: yes
+
+  - name: Percona Server for MongoDB | Install percona-server-mongodb
+    apt: update-cache=yes force=yes state=present pkg=percona-server-mongodb
+    when: ansible_os_family == "Debian" and mongo_present|failed
+    become: yes
+    tags: mongodb3
+
+  - name: Percona Server for MongoDB | Ensure data folder exists
+    file: path=/var/lib/mongodb/ state=directory owner=mongod group=mongod
+    become: yes
+    tags: mongodb3
+
+  - debug: var="upstart_system"
+
+#  - name: Percona Server for MongoDB | template systemd service
+#    template: src="{{role_dir}}/templates/systemd/mongod.service.j2" dest="/etc/systemd/system/mongod.service"
+#    become: yes
+#    when: upstart_system == "systemd"
+
+#  - name: Percona Server for MongoDB | start service
+#    service: name=mongod state=started enabled=yes
+#    become: yes
+#    when: upstart_system == "systemd" and docker_test is not defined
+#    tags: mongodb3

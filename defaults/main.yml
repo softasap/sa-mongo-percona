@@ -1,0 +1,9 @@
+---
+# defaults file for sa-mongo-percona
+
+  role_dir: "{{role_path}}"
+  mongo_version: "3.4"
+  mongo_bind_ip: 127.0.0.1
+  mongo_conf3_properties:
+    - {regexp: "^  bindIp:.*", line: "  bindIp: {{mongo_bind_ip}}"}
+
